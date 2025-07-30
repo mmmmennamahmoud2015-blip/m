@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dots and Boxes - Challenge</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e7f3ff;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #0077cc;
+    }
+    #game-board {
+      display: grid;
+      grid-template-columns: repeat(7, 40px);
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      background-color: #0077cc;
+      border-radius: 50%;
+      margin: auto;
+    }
+    .line {
+      width: 40px;
+      height: 10px;
+      background-color: #ccc;
+      margin: auto;
+      cursor: pointer;
+    }
+    .vertical-line {
+      width: 10px;
+      height: 40px;
+    }
+    .box {
+      width: 40px;
+      height: 40px;
+      background-color: #fff;
+    }
+    #win-message {
+      display: none;
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dots & Boxes - 3x3 Challenge</h1>
+  <div id="game-board"></div>
+  <div id="win-message">مبروك! معاك دلوقتي تذكرة علشان تحضر الايفينت 🎉</div>
+  <script>
+    const size = 3;
+    const board = document.getElementById("game-board");
+    let score = 0;
+    const totalBoxes = size * size;
+
+    function createBoard() {
+      for (let row = 0; row < size * 2 + 1; row++) {
+        for (let col = 0; col < size * 2 + 1; col++) {
+          const cell = document.createElement("div");
+          if (row % 2 === 0 && col % 2 === 0) {
+            cell.classList.add("dot");
+          } else if (row % 2 === 0) {
+            cell.classList.add("line");
+            cell.onclick = drawLine;
+          } else if (col % 2 === 0) {
+            cell.classList.add("line", "vertical-line");
+            cell.onclick = drawLine;
+          } else {
+            cell.classList.add("box");
+            cell.dataset.filled = "false";
+          }
+          board.appendChild(cell);
+        }
+      }
+    }
+
+    function drawLine() {
+      if (this.style.backgroundColor === "black") return;
+      this.style.backgroundColor = "black";
+      checkBoxes();
+    }
+
+    function checkBoxes() {
+      const boxes = document.querySelectorAll(".box");
+      boxes.forEach(box => {
+        if (box.dataset.filled === "false") {
+          const index = Array.from(board.children).indexOf(box);
+          const top = board.children[index - (size * 2 + 1)];
+          const bottom = board.children[index + (size * 2 + 1)];
+          const left = board.children[index - 1];
+          const right = board.children[index + 1];
+          if (top?.style.backgroundColor === "black" &&
+              bottom?.style.backgroundColor === "black" &&
+              left?.style.backgroundColor === "black" &&
+              right?.style.backgroundColor === "black") {
+            box.style.backgroundColor = "#b3e6b3";
+            box.dataset.filled = "true";
+            score++;
+            if (score === totalBoxes) {
+              document.getElementById("win-message").style.display = "block";
+            }
+          }
+        }
+      });
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
